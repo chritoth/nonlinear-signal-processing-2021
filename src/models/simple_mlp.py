@@ -31,6 +31,8 @@ class SimpleMLP(nn.Module):
         self.hidden_size = hidden_size
         self.hidden_layer_1 = nn.Linear(1, self.hidden_size)
         self.hidden_layer_2 = nn.Linear(self.hidden_size, self.hidden_size)
+        self.hidden_layer_3 = nn.Linear(self.hidden_size, self.hidden_size)
+        self.hidden_layer_4 = nn.Linear(self.hidden_size, self.hidden_size)
         self.output_layer = nn.Linear(self.hidden_size, 1)
 
     def forward(self, x):
@@ -56,7 +58,9 @@ class SimpleMLP(nn.Module):
         # compute forward pass
         z1 = torch.tanh(self.hidden_layer_1(x))
         z2 = torch.tanh(self.hidden_layer_2(z1))
-        output = self.output_layer(z2)
+        z3 = torch.tanh(self.hidden_layer_3(z2))
+        z4 = torch.tanh(self.hidden_layer_3(z3))
+        output = self.output_layer(z4)
         return output
 
     def predict(self, x):
@@ -101,10 +105,13 @@ class SimpleMLP(nn.Module):
         optimizer = torch.optim.Adam(self.parameters(), lr=learning_rate)
 
         # create a data loader that takes care of batching our training set
-        data = torch.FloatTensor(data[:, np.newaxis]) if len(data.shape) < 2 else torch.FloatTensor(data)
-        targets = torch.FloatTensor(targets[:, np.newaxis]) if len(targets.shape) < 2 else torch.FloatTensor(targets)
+        data = torch.FloatTensor(data[:, np.newaxis]) if len(
+            data.shape) < 2 else torch.FloatTensor(data)
+        targets = torch.FloatTensor(targets[:, np.newaxis]) if len(
+            targets.shape) < 2 else torch.FloatTensor(targets)
         training_set = TensorDataset(data, targets)
-        train_loader = DataLoader(training_set, batch_size=batch_size, shuffle=True)
+        train_loader = DataLoader(
+            training_set, batch_size=batch_size, shuffle=True)
 
         # train the network
         train_loss_list = []
